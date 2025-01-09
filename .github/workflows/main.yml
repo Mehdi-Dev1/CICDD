@@ -1,0 +1,52 @@
+  name: CI/CD Pipeline
+  
+  on:
+    push:
+      branches:
+        - main 
+    pull_request:
+      branches:
+        - main
+  jobs:
+    test:
+      name: je lance le test
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+          
+        - name: set up node
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+              
+        - name: instal CI
+          run: npm ci
+          
+        - name: execute test
+          run: npm run test:unit
+  
+    build:
+      name: build le projet
+      runs-on: ubuntu-latest
+      needs: [test]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+          
+        - name: set up node
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+            
+        - name: instal CI
+          run: npm ci
+          
+        - name: execute build
+          run: npm run build
+
+        - name: create artifact build
+          uses: actions/upload-artifact@v3
+          with:
+            name: build
+            path: dist
